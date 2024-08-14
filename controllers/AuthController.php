@@ -37,10 +37,10 @@ class AuthController {
                 session_start();
                 $_SESSION['user_id'] = $user['id'];
                 $_SESSION['user_name'] = $user['name'];
-                Response::sendResponse('Login successful!');
-            } else {
-                Response::sendResponse('Invalid email or password.');
+                return Response::sendResponse('Login successful!');
             }
+
+            return Response::sendResponse('Invalid email or password.');
         } catch (\Throwable $th) {
             return Response::sendResponse("Ocurrio un error inesperado", 400);
         }
@@ -48,7 +48,23 @@ class AuthController {
 
     public function logout()
     {
-        $view = 'views/auth/register.php';
-        require 'views/layout.php';
+        session_start();
+        // Eliminar todas las variables de sesión
+        $_SESSION = [];
+
+        // Eliminar la cookie de sesión si existe
+        if (ini_get("session.use_cookies")) {
+            $params = session_get_cookie_params();
+            setcookie(session_name(), '', time() - 42000,
+                $params["path"], $params["domain"],
+                $params["secure"], $params["httponly"]
+            );
+        }
+
+        // Destruir la sesión
+        session_destroy();
+
+        // Redirigir al usuario a la página de login
+        return Response::sendResponse('Session closed.');
     }
 }

@@ -56,6 +56,7 @@
 //     }
 // }
 
+require_once 'middleware/AuthMiddleware.php';
 
 function route($url, $method) {
     $url = trim($url, '/');
@@ -69,7 +70,7 @@ function route($url, $method) {
 
     if (!file_exists(__DIR__ . "/$identity/routes.php")){
         http_response_code(404);
-        echo "Página no encontrada";
+        echo "Recurso no encontrado";
         return false;
     }
 
@@ -85,6 +86,17 @@ function route($url, $method) {
 
     foreach ($routes[$method] as $routePattern => $action) {
         // Dividir la ruta en partes
+        if (str_ends_with($routePattern, '*')) {
+            $is_session_active = AuthMiddleware::handle();
+
+            if(!$is_session_active){
+                http_response_code(401);
+                echo "Unauthorized";
+                return false;
+            }
+        }
+
+        $routePattern = rtrim($routePattern, '*');
         $routeParts = explode('/', $routePattern);
 
         // Verificar si la ruta coincide

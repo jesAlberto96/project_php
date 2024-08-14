@@ -1,4 +1,8 @@
-<?php include 'auth/validate_session.php'; ?>
+<?php
+require_once 'middleware/AuthMiddleware.php';
+
+AuthMiddleware::handleRedirect();
+?>
 
 <h2>Lista de Usuarios</h2>
 <ul>

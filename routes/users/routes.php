@@ -4,7 +4,7 @@ require_once 'controllers/UserController.php';
 
 return [
     'GET' => [
-        'users' => 'UserController@showAll',
+        'users*' => 'UserController@showAll',
         'users/{id}' => 'UserController@show',
     ],
     'POST' => [
